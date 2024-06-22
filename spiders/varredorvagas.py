@@ -14,8 +14,8 @@ def queryCreator(element):
 class VarredorVagasSpider(scrapy.Spider):
     name = 'vagasbot'
     descricao = 'python estagio'
-    cidade = 'São Paulo'
-    uf = 'SP'
+    cidade = 'Vitória'
+    uf = 'ES'
     
     link_descricao = queryCreator(descricao)
     link_cidade = queryCreator(cidade)
