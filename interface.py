@@ -17,7 +17,9 @@ def janela_config():
         [sg.Text('Preferências da vaga')],
         [sg.Input(key='description')],
         [sg.Frame('Localização',[
-            [sg.Radio('Todos',group_id='localizacao_radio',key='todos_radio',default=True),sg.Radio('Remoto',group_id='localizacao_radio',key='remoto_radio'),sg.Radio('Presencial',group_id='localizacao_radio',key='presencial_radio')],
+            [sg.Radio('Todos',group_id='localizacao_radio',key='todos_radio',default=True, enable_events=True),
+             sg.Radio('Remoto',group_id='localizacao_radio',key='remoto_radio',enable_events=True),
+             sg.Radio('Presencial',group_id='localizacao_radio',key='presencial_radio',enable_events=True)],
             [sg.Combo(uf_estados_brasileiros, key='uf'), sg.Text('UF')],
             [sg.Input(key='city',size=(15,1)), sg.Text('Cidade')]
         ])],
@@ -34,12 +36,13 @@ def janela_inicializacao():
     layout_inicializacao = [
         [sg.Text('Scraper de vagas',justification='center',size=(37, 1),font=('Helvetica', 12, 'bold'))],
         [sg.Output(size=(50,20))],
-        [sg.Button('Analisar outras vagas'),sg.Button('Sair')]
+        [sg.Button('Sair', disabled=True), sg.Text(key='progresso')]
     ]
     
     return sg.Window('Inicialização', layout=layout_inicializacao,finalize=True)
 
 janela_config_, janela_inicializacao_ = janela_config() , None
+
 
 while True:
     window, event, values = sg.read_all_windows()
@@ -49,6 +52,15 @@ while True:
     
     if window == janela_config_:
         
+        if event in ['todos_radio', 'remoto_radio', 'presencial_radio']:
+            if values['remoto_radio']:
+                window['uf'].update(disabled=True)
+                window['city'].update(value='Home Office',disabled=True)
+                
+            else:
+                window['uf'].update(disabled=False)
+                window['city'].update(disabled=False)
+       
         if event == 'Salvar diretório':  
             # Verifica se o campo de diretório está vazio
             if values['-DIRPATH-'] == '':
@@ -61,6 +73,7 @@ while True:
         elif event == 'start':
             thread_validar_usuario = Thread(target=validate_username, args=(window,values['user']), daemon=True)
             thread_validar_usuario.start()
+            
         
         elif event == 'validate_username':
             thread_validar_usuario.join()
@@ -73,25 +86,32 @@ while True:
                 else:
                     janela_inicializacao_ = janela_inicializacao()
                 
+                janela_inicializacao_.write_event_value('init_bot','Verificando vagas...')
+               
                 thread_init_scrap = Thread(target=init_scrap, args=(window,values), daemon=True)
                 thread_init_scrap.start()
-                  
+                
             else:
                 window['invalid_user'].update(result_validate['message'],text_color='red')
+        
+        elif event == 'final_bot':
+            thread_init_scrap.join()
+            janela_inicializacao_.write_event_value('scrapy_finalized','Scraper finalizado!')
+                  
+            
                 
     if window == janela_inicializacao_:
-        if event == 'Analisar outras vagas':
-            janela_inicializacao_.hide()
-            janela_config_.un_hide()
-        
-        elif event=='Sair':
+        if event=='Sair':
             break;
         
-        elif event=='init_bot':
-            thread_init_scrap.join()
-            print('AUTOMAÇÃO FINALIZADA!!!!!!')
+        elif event == 'init_bot':
+            window['progresso'].update(values['init_bot'])
         
+        elif event=='scrapy_finalized':
+            window['progresso'].update(values['scrapy_finalized'], text_color='green')
+            window['Sair'].update(disabled=False)
         
+    
         
 # Fechando as janelas ao finalizar
 if janela_config_:

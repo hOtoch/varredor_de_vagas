@@ -2,6 +2,7 @@ import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from spiders.varredorvagas import VarredorVagasSpider
+import os
 
 def validate_username(window, username):
     # API do GitHub para verificar se um nome de usuário existe
@@ -21,11 +22,21 @@ def validate_username(window, username):
         
 
 def init_scrap(window, values):
-
+    descricao = values['description']
+    cidade = values['city']
+    uf = values['uf']
+    modo_presencial = values['presencial_radio']
+    diretorio = values['-DIRPATH-']
+    
+    caminho_csv = os.path.join(diretorio,'vagas.csv')
+    
+    if os.path.exists(caminho_csv):
+        os.remove(caminho_csv)
+    
     bot = CrawlerProcess(
         settings = {
             "FEEDS": {
-                "vagas.csv" : {"format":"csv"}
+                caminho_csv: {"format":"csv","encoding": "utf-8","delimiter": ";"}
             },
             "ROBOTSTXT_OBEY" : False,
             "DOWNLOADER_MIDDLEWARES" : {
@@ -45,9 +56,16 @@ def init_scrap(window, values):
             "CRAPEOPS_PROXY_ENABLED" : True
         }
     )
+
+        
+    bot.crawl(VarredorVagasSpider,descricao=descricao,cidade=cidade,uf=uf,modo_presencial=modo_presencial)
     
-    bot.crawl(VarredorVagasSpider)
+    
     bot.start()
     
-    window.write_event_value('init_bot','')
+    window.write_event_value('final_bot','')
+    
+    
+    
+    
     

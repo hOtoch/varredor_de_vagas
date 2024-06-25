@@ -6,7 +6,17 @@
 import scrapy
 
 
-class VarredorVagasItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class VagaItem(scrapy.Item):
+    cargo = scrapy.Field()
+    empresa = scrapy.Field()
+    localizacao = scrapy.Field()
+    link = scrapy.Field()
+    
+    
+def filtro_presencial(item, modo_presencial):
+    
+    for loc in item['localizacao']:
+        if modo_presencial and 'Home Office' in loc:
+            return False
+    
+    return True
