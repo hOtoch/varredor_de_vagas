@@ -52,7 +52,7 @@ def init_scrap(window, values):
                 'scrapy_fake_useragent.providers.FixedUserAgentProvider'  # Fall back to USER_AGENT value
             ],
             "USER_AGENT" : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203',
-            "SCRAPEOPS_API_KEY": '13a42ba2-ad28-4b11-a10b-172e69499325',
+            "SCRAPEOPS_API_KEY": 'COLOQUE SUA CHAVE AQUI',
             "CRAPEOPS_PROXY_ENABLED" : True
         }
     )

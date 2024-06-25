@@ -1,6 +1,6 @@
 import PySimpleGUI as sg 
 from threading import Thread
-from utilities import validate_username,init_scrap
+from interface.utilities import validate_username,init_scrap
 from time import sleep
 
 
