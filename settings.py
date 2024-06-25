@@ -6,6 +6,10 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BOT_NAME = "varredor_vagas"
 
@@ -37,7 +41,7 @@ FAKEUSERAGENT_PROVIDERS = [
 ## Set Fallback User-Agent
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203'
 
-SCRAPEOPS_API_KEY = 'COLOQUE SUA CHAVE AQUI'
+SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
 CRAPEOPS_PROXY_ENABLED = True
 
 DOWNLOADER_MIDDLEWARES = {

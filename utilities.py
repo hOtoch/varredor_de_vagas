@@ -3,6 +3,7 @@ import scrapy
 from scrapy.crawler import CrawlerProcess
 from spiders.varredorvagas import VarredorVagasSpider
 import os
+from dotenv import load_dotenv
 
 def validate_username(window, username):
     # API do GitHub para verificar se um nome de usuário existe
@@ -28,6 +29,8 @@ def init_scrap(window, values):
     modo_presencial = values['presencial_radio']
     diretorio = values['-DIRPATH-']
     
+    load_dotenv()
+    
     caminho_csv = os.path.join(diretorio,'vagas.csv')
     
     if os.path.exists(caminho_csv):
@@ -36,7 +39,9 @@ def init_scrap(window, values):
     bot = CrawlerProcess(
         settings = {
             "FEEDS": {
-                caminho_csv: {"format":"csv","encoding": "utf-8","delimiter": ";"}
+                caminho_csv: {"format":"csv","encoding": "utf-8","item_export_kwargs": {
+                        "delimiter": ";"
+                    }}
             },
             "ROBOTSTXT_OBEY" : False,
             "DOWNLOADER_MIDDLEWARES" : {
@@ -52,7 +57,7 @@ def init_scrap(window, values):
                 'scrapy_fake_useragent.providers.FixedUserAgentProvider'  # Fall back to USER_AGENT value
             ],
             "USER_AGENT" : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203',
-            "SCRAPEOPS_API_KEY": 'COLOQUE SUA CHAVE AQUI',
+            "SCRAPEOPS_API_KEY": os.getenv('SCRAPEOPS_API_KEY'),
             "CRAPEOPS_PROXY_ENABLED" : True
         }
     )

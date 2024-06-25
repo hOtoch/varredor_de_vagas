@@ -1,5 +1,5 @@
 import scrapy
-from ..items import VagaItem, filtro_presencial
+from items import VagaItem, filtro_presencial
 
 def queryCreator(element):
     elementSplit = element.split(' ')
@@ -35,6 +35,14 @@ class VarredorVagasSpider(scrapy.Spider):
     modo_presencial = False
     link_descricao = queryCreator(descricao)
     link_cidade = queryCreator(cidade)
+    
+    e substitua o import :
+    
+    from items import VagaItem, filtro_presencial
+    
+    por:
+    
+    from ..items import VagaItem, filtro_presencial
     
     '''
     
